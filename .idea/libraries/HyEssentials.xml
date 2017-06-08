@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HyEssentials">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../HyEssentials/out/artifacts/HyEssentials/HyEssentials.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
