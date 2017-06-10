@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="HyLimitFlow">
+    <output-path>$PROJECT_DIR$/</output-path>
+    <root id="archive" name="HyLimitFlow.jar">
+      <element id="module-output" name="HyLimitFlow" />
+    </root>
+  </artifact>
+</component>
