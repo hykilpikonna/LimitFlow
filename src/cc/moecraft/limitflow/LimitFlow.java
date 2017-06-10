@@ -1,18 +1,19 @@
 package cc.moecraft.limitflow;
 
+import cc.moecraft.hykilpikonna.essentials.logger.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 此类由 Hykilpikonna 在 2017/06/07 创建!
@@ -25,37 +26,101 @@ public class LimitFlow
         implements Listener
 {
 
+    Logger logger;
+
     public void onEnable()
     {
+        //TODO: Debug switch in config.
+        logger = new Logger("HyLimitFlow", true);
         getConfig().options().copyDefaults(true);
         saveConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
     }
 
-    public void checkConfig()
+    private void checkConfig()
     {
         if (getConfig().getBoolean("DefaultConfig"))
         {
+            getConfig().addDefault("Debug", true);
+            writeConfig(true);
+        }
+        else
+        {
+            logger.setDebug(getConfig().getBoolean("Debug"));
+            writeConfig(false);
+        }
+        saveConfig();
+    }
 
-            ArrayList<String> worldList = new ArrayList<>();
-            //把世界加入配置文件里
-            for (World world : getServer().getWorlds())
+    private void writeConfig(boolean firstTimeCreatingConfigFile)
+    {
+        logger.Debug(String.format("[配置][生成]开始写入配置, 生成初始配置: %s", firstTimeCreatingConfigFile));
+
+        ArrayList<String> worldList = new ArrayList<>();
+        //把世界加入配置文件里
+        logger.Debug("[配置][生成]正在把世界列表存进缓存....");
+        for (World world : getServer().getWorlds())
+        {
+            logger.Debug(String.format("[配置][生成][世界]已将: %s存入世界列表", world.getName()));
+            worldList.add(world.getName());
+            if (firstTimeCreatingConfigFile)
             {
-                worldList.add(world.getName());
-                getConfig().addDefault(world.getName() + ".useDefaults", false);
+                saveWorldConfig(world);
             }
+        }
+        logger.Debug("[配置][生成]已将世界列表存入缓存");
+        if (firstTimeCreatingConfigFile)
+        {
+            logger.Debug("[配置][生成]已将世界列表存入配置文件");
             getConfig().addDefault("WorldList", worldList);
         }
         else
         {
-            ArrayList<String> worldList = new ArrayList<>();
-            //把世界加入配置文件里
-            for (World world : getServer().getWorlds())
+            logger.Debug("[配置][修改]正在检测世界列表是不是最新....");
+            List<String> oldWorldListTemp = (List<String>)(getConfig().getList("WorldList"));
+            ArrayList<String> oldWorldList = new ArrayList<>(oldWorldListTemp.size());
+            oldWorldList.addAll(oldWorldListTemp);
+            if (!oldWorldList.equals(worldList))
             {
-                worldList.add(world.getName());
+                logger.Debug("[配置][修改]不是最新!");
+                logger.Debug("[配置][修改]正在检查每一个世界的配置...");
+                for (String world : worldList)
+                {
+                    logger.Debug(String.format("[配置][修改][世界]正在检查%s的配置...", world));
+                    if (oldWorldList.contains(world))
+                    {
+                        logger.Debug(String.format("[配置][修改][世界]%s的配置已存在!", world));
+                    }
+                    else
+                    {
+                        logger.Debug(String.format("[配置][修改][世界]%s的配置不存在!", world));
+                        saveWorldConfig(world);
+                    }
+                }
+                getConfig().set("WorldList", worldList);
+                logger.Debug("[配置][修改]已将世界列表更新");
             }
-            getConfig().addDefault("WorldList", worldList);
+            else
+            {
+                logger.Debug("[配置][修改]是最新!");
+            }
         }
+    }
+
+    private void saveWorldConfig(World world)
+    {
+        saveWorldConfig(world.getName());
+    }
+
+    private void saveWorldConfig(String world)
+    {
+        getConfig().addDefault(world + ".Water.Limit", true);
+        getConfig().addDefault(world + ".Water.HorizontalLimit", 3);
+        getConfig().addDefault(world + ".Water.VerticalLimit", 5);
+        getConfig().addDefault(world + ".Lava.Limit", true);
+        getConfig().addDefault(world + ".Lava.HorizontalLimit", 3);
+        getConfig().addDefault(world + ".Lava.VerticalLimit", 5);
+        logger.Debug(String.format("[配置][生成][世界]已生成%s的默认配置", world));
     }
 
     public void onDisable() {}
@@ -63,50 +128,46 @@ public class LimitFlow
     @EventHandler(priority= EventPriority.LOW, ignoreCancelled=true)
     public void onBlockFromToEvent(BlockFromToEvent event)
     {
+        logger.Debug("[事件]BlockFromToEvent激发");
         Material material = event.getBlock().getType();
-        Location loc = event.getToBlock().getLocation();
-        String wn = loc.getWorld().getName();
-
-        ConfigurationSection Config = getConfig();
-        String path;
-        if ((material == Material.WATER) || (material == Material.STATIONARY_WATER))
+        if (material.equals(Material.WATER) || material.equals(Material.STATIONARY_WATER) || material.equals(Material.LAVA) || material.equals(Material.STATIONARY_LAVA))
         {
-            path = "water";
-        }
-        else
-        {
-            if ((material == Material.LAVA) || (material == Material.STATIONARY_LAVA)) {
-                path = "lava";
-            } else {
-                path = String.valueOf(event.getBlock().getType());
-            }
-        }
-        if ((Config.get("Worlds." + wn) != null) && (Config.get("Worlds." + wn + "." + path) != null))
-        {
-            path = "Worlds." + wn + "." + path;
-        }
-        else
-        {
-            path = "Default." + path;
-            if (Config.get(path) == null)
+            Block toBlock = event.getToBlock();
+            logger.Debug("[事件][处理]方块是液体类");
+            String blockName = material.name();
+            logger.Debug(String.format("[事件][处理]方块名被存为%s", blockName));
+            Location location = toBlock.getLocation();
+            logger.Debug(String.format("[事件][处理]方块位置为: [X=%s, Y=%s, Z=%s] 在%s世界", location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld().getName()));
+            if (getConfig().getBoolean(location.getWorld().getName() + "." + blockName + ".Limit"))
             {
-                Bukkit.getConsoleSender().sendMessage("Find new fluid: " + event.getBlock().getType());
-                Config.set(path + ".Limit", Boolean.TRUE);
-                Config.set(path + ".MinYFlow", 50);
-                Config.set(path + ".MaxYFlow", 70);
-                Config.set(path + ".Flow", 3);
-                saveConfig();
-            }
-        }
-        if (Config.getBoolean(path + ".Limit")) {
-            if ((loc.getY() >= Config.getInt(path + ".MinYFlow")) && (loc.getY() <= Config.getInt(path + ".MaxYFlow")))
-            {
-                if (event.getBlock().getData() >= Config.getInt(path + ".Flow")) {
+                logger.Debug(String.format("[事件][处理]世界%s的%s限制为真", location.getWorld(), blockName));
+                if (event.getBlock().getData() >= getConfig().getInt(location.getWorld().getName() + "." + blockName + ".Limit"))
+                {
                     event.setCancelled(true);
+                    logger.Debug("[事件][处理]横向流动已检测, 此事件已被取消!");
+                }
+                else
+                {
+                    Location tempLocation = toBlock.getLocation();
+                    logger.Debug(String.format("[事件][处理]缓存方块位置为: [X=%s, Y=%s, Z=%s] 在%s世界", tempLocation.getBlockX(), tempLocation.getBlockY(), tempLocation.getBlockZ(), tempLocation.getWorld().getName()));
+                    tempLocation.setY(toBlock.getLocation().getBlockY() + getConfig().getInt(location.getWorld().getName() + "." + blockName + ".VerticalLimit"));
+                    logger.Debug(String.format("[事件][处理]缓存方块位置已改为: [X=%s, Y=%s, Z=%s] 在%s世界", tempLocation.getBlockX(), tempLocation.getBlockY(), tempLocation.getBlockZ(), tempLocation.getWorld().getName()));
+                    Material higherBlock = tempLocation.getBlock().getType();
+                    logger.Debug(String.format("[事件][处理]更高的方块名被存为%s", higherBlock.name()));
+                    if (higherBlock.equals(Material.WATER) || higherBlock.equals(Material.STATIONARY_WATER) || higherBlock.equals(Material.LAVA) || higherBlock.equals(Material.STATIONARY_LAVA))
+                    {
+                        event.setCancelled(true);
+                        logger.Debug(String.format("[事件][处理]更高的方块是液体, 此事件已被取消"));
+                    }
+                    else
+                    {
+                        logger.Debug(String.format("[事件][处理]更高的方块不是液体."));
+                    }
                 }
             }
-            else {
-                event.setCancelled(true);
+            else
+            {
+                logger.Debug(String.format("[事件][处理]世界%s的%s限制为假!", location.getWorld(), blockName));
             }
         }
     }
