@@ -140,8 +140,26 @@ public class LimitFlow
         {
             Block toBlock = event.getToBlock();
             logger.Debug("[事件][处理]方块是液体类");
-            String blockName = material.name();
-            logger.Debug(String.format("[事件][处理]方块名被存为%s", blockName));
+            String materialName = material.name();
+            logger.Debug(String.format("[事件][处理]方块Material名被存为%s", materialName));
+            String blockName = "";
+            switch(materialName)
+            {
+                case "STATIONARY_WATER":
+                    blockName = "Water";
+                    break;
+                case "STATIONARY_LAVA":
+                    blockName = "Lava";
+                    break;
+                case "WATER":
+                    blockName = "Water";
+                    break;
+                case "LAVA":
+                    blockName = "Lava";
+                    break;
+                default:
+                    return;
+            }
             Location location = toBlock.getLocation();
             logger.Debug(String.format("[事件][处理]方块位置为: [X=%s, Y=%s, Z=%s] 在%s世界", location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld().getName()));
             if (getConfig().getBoolean(location.getWorld().getName() + "." + blockName + ".Limit"))
