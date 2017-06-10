@@ -47,6 +47,7 @@ public class LimitFlow
         if (getConfig().getBoolean("DefaultConfig"))
         {
             getConfig().addDefault("Debug", true);
+            getConfig().set("DefaultConfig", false);
             writeConfig(true);
         }
         else
