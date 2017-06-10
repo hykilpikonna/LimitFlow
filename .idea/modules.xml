@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LimitFlow.iml" filepath="$PROJECT_DIR$/LimitFlow.iml" />
+      <module fileurl="file://$PROJECT_DIR$/HyLimitFlow.iml" filepath="$PROJECT_DIR$/HyLimitFlow.iml" />
     </modules>
   </component>
 </project>

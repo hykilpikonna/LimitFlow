@@ -1,4 +1,4 @@
-package cc.moecraft.limitflow;
+package cc.moecraft.hylimitflow;
 
 import cc.moecraft.hykilpikonna.essentials.logger.Logger;
 import org.bukkit.*;
@@ -18,7 +18,7 @@ import java.util.List;
  * Twitter: @Hykilpikonna
  * QQ/Wechat: 871674895
  */
-public class LimitFlow
+public class HyLimitFlow
         extends JavaPlugin
         implements Listener
 {

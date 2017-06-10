@@ -2,7 +2,7 @@
   <artifact type="jar" name="LimitFlow">
     <output-path>$PROJECT_DIR$/out/artifacts/LimitFlow</output-path>
     <root id="archive" name="LimitFlow.jar">
-      <element id="module-output" name="LimitFlow" />
+      <element id="module-output" name="HyLimitFlow" />
     </root>
   </artifact>
 </component>
