@@ -1,5 +1,5 @@
 name: "LimitFlow"
-version: 0.0.3
+version: 0.0.4
 description: "A plugin to limit liquid flowing"
 author: Hykilpikonna
 main: cc.moecraft.limitflow.LimitFlow

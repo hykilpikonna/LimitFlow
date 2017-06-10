@@ -29,13 +29,13 @@ public class LimitFlow
     {
         try
         {
+            logger = new Logger("HyLimitFlow", true);
             logger.log("此插件正在加载......");
         }
         catch (java.lang.NoClassDefFoundError error)
         {
             Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "[HyFluidLimit]此插件需要HyEssentials前置!");
         }
-        logger = new Logger("HyLimitFlow", true);
         getConfig().options().copyDefaults(true);
         checkConfig();
         saveConfig();
