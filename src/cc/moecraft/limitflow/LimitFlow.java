@@ -1,10 +1,7 @@
 package cc.moecraft.limitflow;
 
 import cc.moecraft.hykilpikonna.essentials.logger.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,6 +27,14 @@ public class LimitFlow
 
     public void onEnable()
     {
+        try
+        {
+            logger.log("此插件正在加载......");
+        }
+        catch (java.lang.NoClassDefFoundError error)
+        {
+            Bukkit.getConsoleSender().sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "[HyFluidLimit]此插件需要HyEssentials前置!");
+        }
         logger = new Logger("HyLimitFlow", true);
         getConfig().options().copyDefaults(true);
         checkConfig();
