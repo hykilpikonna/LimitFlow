@@ -30,9 +30,9 @@ public class LimitFlow
 
     public void onEnable()
     {
-        //TODO: Debug switch in config.
         logger = new Logger("HyLimitFlow", true);
         getConfig().options().copyDefaults(true);
+        checkConfig();
         saveConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
     }
