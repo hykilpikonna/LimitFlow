@@ -166,11 +166,13 @@ public class LimitFlow
             if (getConfig().getBoolean("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"))
             {
                 logger.Debug(String.format("[事件][处理]世界%s的%s限制为真", location.getWorld(), blockName));
-                if (event.getBlock().getData() >= getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"))
+                if (event.getBlock().getData() >= getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".HorizontalLimit"))
                 {
                     event.setCancelled(true);
                     logger.Debug("[事件][处理][信息]event.getBlock().getData() = " + event.getBlock().getData());
-                    logger.Debug("[事件][处理][信息]getConfig().*) = " + getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"));
+                    logger.Debug("[事件][处理][信息]getConfig().*) = " + getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".HorizontalLimit"));
+                    logger.Debug("[事件][处理][信息]path = " + "Worlds." + location.getWorld().getName() + "." + blockName + ".HorizontalLimit");
+
                     logger.Debug("[事件][处理]横向流动已检测, 此事件已被取消!");
                 }
                 else
