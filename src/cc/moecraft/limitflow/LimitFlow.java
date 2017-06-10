@@ -40,13 +40,15 @@ public class LimitFlow
         checkConfig();
         saveConfig();
         Bukkit.getPluginManager().registerEvents(this, this);
+        logger.setDebug(getConfig().getBoolean("Debug"));
+        logger.log("此插件加载完毕!");
     }
 
     private void checkConfig()
     {
         if (getConfig().getBoolean("DefaultConfig"))
         {
-            getConfig().addDefault("Debug", true);
+            getConfig().addDefault("Debug", false);
             getConfig().set("DefaultConfig", false);
             writeConfig(true);
         }
@@ -63,7 +65,6 @@ public class LimitFlow
         logger.Debug(String.format("[配置][生成]开始写入配置, 生成初始配置: %s", firstTimeCreatingConfigFile));
 
         ArrayList<String> worldList = new ArrayList<>();
-        //把世界加入配置文件里
         logger.Debug("[配置][生成]正在把世界列表存进缓存....");
         for (World world : getServer().getWorlds())
         {
