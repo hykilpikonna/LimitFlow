@@ -169,6 +169,8 @@ public class LimitFlow
                 if (event.getBlock().getData() >= getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"))
                 {
                     event.setCancelled(true);
+                    logger.Debug("[事件][处理][信息]event.getBlock().getData() = " + event.getBlock().getData());
+                    logger.Debug("[事件][处理][信息]getConfig().*) = " + getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"));
                     logger.Debug("[事件][处理]横向流动已检测, 此事件已被取消!");
                 }
                 else
