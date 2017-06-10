@@ -120,6 +120,7 @@ public class LimitFlow
 
     private void saveWorldConfig(String world)
     {
+        world = "Worlds." + world;
         getConfig().addDefault(world + ".Water.Limit", true);
         getConfig().addDefault(world + ".Water.HorizontalLimit", 3);
         getConfig().addDefault(world + ".Water.VerticalLimit", 5);
@@ -162,10 +163,10 @@ public class LimitFlow
             }
             Location location = toBlock.getLocation();
             logger.Debug(String.format("[事件][处理]方块位置为: [X=%s, Y=%s, Z=%s] 在%s世界", location.getBlockX(), location.getBlockY(), location.getBlockZ(), location.getWorld().getName()));
-            if (getConfig().getBoolean(location.getWorld().getName() + "." + blockName + ".Limit"))
+            if (getConfig().getBoolean("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"))
             {
                 logger.Debug(String.format("[事件][处理]世界%s的%s限制为真", location.getWorld(), blockName));
-                if (event.getBlock().getData() >= getConfig().getInt(location.getWorld().getName() + "." + blockName + ".Limit"))
+                if (event.getBlock().getData() >= getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".Limit"))
                 {
                     event.setCancelled(true);
                     logger.Debug("[事件][处理]横向流动已检测, 此事件已被取消!");
@@ -174,7 +175,7 @@ public class LimitFlow
                 {
                     Location tempLocation = toBlock.getLocation();
                     logger.Debug(String.format("[事件][处理]缓存方块位置为: [X=%s, Y=%s, Z=%s] 在%s世界", tempLocation.getBlockX(), tempLocation.getBlockY(), tempLocation.getBlockZ(), tempLocation.getWorld().getName()));
-                    tempLocation.setY(toBlock.getLocation().getBlockY() + getConfig().getInt(location.getWorld().getName() + "." + blockName + ".VerticalLimit"));
+                    tempLocation.setY(toBlock.getLocation().getBlockY() + getConfig().getInt("Worlds." + location.getWorld().getName() + "." + blockName + ".VerticalLimit"));
                     logger.Debug(String.format("[事件][处理]缓存方块位置已改为: [X=%s, Y=%s, Z=%s] 在%s世界", tempLocation.getBlockX(), tempLocation.getBlockY(), tempLocation.getBlockZ(), tempLocation.getWorld().getName()));
                     Material higherBlock = tempLocation.getBlock().getType();
                     logger.Debug(String.format("[事件][处理]更高的方块名被存为%s", higherBlock.name()));
